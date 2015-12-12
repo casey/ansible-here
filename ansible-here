@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+  echo usage: ansible-here PLAYBOOK
+  exit
+fi
+
+INVENTORY=$(mktemp)
+
+echo "[localhost]\nlocalhost ansible_connection=local" > $INVENTORY
+
+function cleanup {
+  rm $INVENTORY
+}
+trap cleanup EXIT
+
+ansible-playbook -i $INVENTORY "$1"
+
+exit $?
